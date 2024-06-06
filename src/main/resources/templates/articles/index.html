@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dev Articles Site - Articles</title>
+</head>
+<body>
+    <header id="header">
+        header
+        <hr>
+    </header>
+
+    <main id="main">
+        <form action="">
+            <label hidden for="search-type">Type</label>
+            <select name="search-type" id="search-type">
+                <option value="title">title</option>
+                <option value="content">content</option>
+                <option value="id">id</option>
+                <option value="name">name</option>
+                <option value="hashtag">hashtag</option>
+            </select>
+            <label  hidden for="search-input">SearchInput</label>
+            <input id="search-input" type="search" placeholder="search..." name="search-input">
+            <button type="submit">Search</button>
+        </form>
+        <table>
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Hashtag</th>
+                    <th>CreateBy</th>
+                    <th>CreateAt</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>First Article</td>
+                    <td>#java</td>
+                    <td>cjungwo</td>
+                    <td>2024-06-06</td>
+                </tr>
+                <tr>
+                    <td>Second Article</td>
+                    <td>#spring</td>
+                    <td>cjungwo</td>
+                    <td>2024-06-07</td>
+                </tr>
+                <tr>
+                    <td>Third Article</td>
+                    <td>#boot</td>
+                    <td>cjungwo</td>
+                    <td>2024-06-08</td>
+                </tr>
+            </tbody>
+        </table>
+        <nav id="nav">
+            <table>
+                <tr>
+                    <td>previous</td>
+                    <td>1</td>
+                    <td>2</td>
+                    <td>3</td>
+                    <td>4</td>
+                    <td>5</td>
+                    <td>next</td>
+                </tr>
+            </table>
+        </nav>
+    </main>
+
+    <footer id="footer">
+        <hr>
+        footer
+    </footer>
+</body>
+</html>
