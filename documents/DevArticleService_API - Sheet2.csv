@@ -1,0 +1,17 @@
+,,
+,,
+URL,Method,Input Data
+/api/sign-up,POST,"user-id, password, email, phone, name, memo"
+/api/login,GET,"user-id, password"
+/api/articles,GET,"filter: user-id, title, content, name, hashtag"
+/api/articles/{article-id},GET,
+/api/articles,POST,"user-id, title, content, hashtag"
+/api/articles/{article-id},"PUT, PATCH","title, content, hashtag"
+/api/articles/{article-id},DELETE,article-id
+/api/articleComments,GET,"filter: user-id, content, name"
+/api/articleComments/{article-comment-id},GET,
+/api/aricles/{article-id}/articleComments,GET,filter: content
+/api/aricles/{article-id}/articleComments/{article-comment-id},GET,
+/api/aricles/{article-id}/articleComments,POST,"user-id, content"
+/api/aricles/{article-id}/articleComments/{article-comment-id},"PUT, PATCH",content
+/api/aricles/{article-id}/articleComments/{article-comment-id},DELETE,comment-id
