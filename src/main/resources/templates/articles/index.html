@@ -1,14 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmln:th="http://www.thymeleaf.org" xmlns:xmln="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <title>Dev Articles Site - Articles</title>
 </head>
 <body>
-    <header id="header">
-        header
-        <hr>
-    </header>
+    <header th:replace="header :: header"></header>
 
     <main id="main">
         <form action="">
@@ -57,7 +54,7 @@
         <nav id="nav">
             <table>
                 <tr>
-                    <td>previous</td>
+                    <td>prev</td>
                     <td>1</td>
                     <td>2</td>
                     <td>3</td>
@@ -69,9 +66,6 @@
         </nav>
     </main>
 
-    <footer id="footer">
-        <hr>
-        footer
-    </footer>
+    <footer th:replace="footer :: footer"></footer>
 </body>
 </html>
