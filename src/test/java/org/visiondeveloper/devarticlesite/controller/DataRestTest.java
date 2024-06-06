@@ -28,7 +28,7 @@ public class DataRestTest {
 
     @DisplayName("[api] Inquiry Article List")
     @Test
-    void givenNothing_whenRequestingArticles_thenReturnsArticlesJsonResponse() throws Exception {
+    public void givenNothing_whenRequestingArticles_thenReturnsArticlesJsonResponse() throws Exception {
         // Given
 
         // When & Then
@@ -39,7 +39,7 @@ public class DataRestTest {
 
     @DisplayName("[api] Inquiry Article")
     @Test
-    void givenNothing_whenRequestingArticle_thenReturnsArticleJsonResponse() throws Exception {
+    public void givenNothing_whenRequestingArticle_thenReturnsArticleJsonResponse() throws Exception {
         // Given
 
         // When & Then
@@ -50,7 +50,7 @@ public class DataRestTest {
 
     @DisplayName("[api] Inquiry Article Comments")
     @Test
-    void givenNothing_whenRequestingArticleComments_thenReturnsArticleCommentsJsonResponse() throws Exception {
+    public void givenNothing_whenRequestingArticleComments_thenReturnsArticleCommentsJsonResponse() throws Exception {
         // Given
 
         // When & Then
@@ -61,7 +61,7 @@ public class DataRestTest {
 
     @DisplayName("[api] Inquiry Article Comments from Article")
     @Test
-    void givenNothing_whenRequestingArticleCommentsFromArticle_thenReturnsArticleCommentsJsonResponse() throws Exception {
+    public void givenNothing_whenRequestingArticleCommentsFromArticle_thenReturnsArticleCommentsJsonResponse() throws Exception {
         // Given
 
         // When & Then
@@ -72,7 +72,7 @@ public class DataRestTest {
 
     @DisplayName("[api] Inquiry Article Comment")
     @Test
-    void givenNothing_whenRequestingArticleComment_thenReturnsArticleCommentJsonResponse() throws Exception {
+    public void givenNothing_whenRequestingArticleComment_thenReturnsArticleCommentJsonResponse() throws Exception {
         // Given
 
         // When & Then
