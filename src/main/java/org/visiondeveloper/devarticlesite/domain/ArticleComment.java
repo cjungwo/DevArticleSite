@@ -15,15 +15,14 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Getter
-@ToString
+@ToString(callSuper = true)
 @Table(indexes = {
         @Index(columnList = "content"),
         @Index(columnList = "createdAt"),
         @Index(columnList = "createdBy")
 })
-@EntityListeners(AuditingEntityListener.class)
 @Entity
-public class ArticleComment {
+public class ArticleComment extends AuditingFields {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,22 +34,6 @@ public class ArticleComment {
     @Setter
     @Column(nullable = false, length = 2000)
     private String content;
-
-    @CreatedDate
-    @Column(nullable = false)
-    private LocalDateTime createdAt;
-
-    @CreatedBy
-    @Column(nullable = false)
-    private String createdBy;
-
-    @LastModifiedDate
-    @Column(nullable = false)
-    private LocalDateTime modifiedAt;
-
-    @LastModifiedBy
-    @Column(nullable = false)
-    private String modifiedBy;
 
 
     protected ArticleComment() {}
