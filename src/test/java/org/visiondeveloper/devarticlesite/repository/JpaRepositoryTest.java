@@ -10,7 +10,7 @@ import org.visiondeveloper.devarticlesite.domain.Article;
 
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("JPA Connection Test")
 @Import(JpaConfig.class)

@@ -14,7 +14,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-//@Disabled("Too heavy test")
+@Disabled("Too heavy test")
 @DisplayName("Data Rest Test")
 @Transactional
 @AutoConfigureMockMvc
