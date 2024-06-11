@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.visiondeveloper.devarticlesite.domain.constant.SearchType;
 import org.visiondeveloper.devarticlesite.dto.ArticleDto;
-import org.visiondeveloper.devarticlesite.dto.ArticleUpdateDto;
+import org.visiondeveloper.devarticlesite.dto.ArticleWithCommentsDto;
 import org.visiondeveloper.devarticlesite.repository.ArticleRepository;
 
 @RequiredArgsConstructor
@@ -23,17 +23,17 @@ public class ArticleService {
     }
 
     @Transactional(readOnly = true)
-    public ArticleDto searchArticles(long l) {
+    public ArticleWithCommentsDto getArticle(Long articleId) {
         return null;
     }
 
     public void saveArticle(ArticleDto dto) {
-
     }
 
-    public void updateArticle(long articleId, ArticleUpdateDto dto) {
+    public void updateArticle(ArticleDto dto) {
     }
 
-    public void deleteArticle(long articleId) {
+    public void deleteArticle(Long articleId) {
     }
+
 }
