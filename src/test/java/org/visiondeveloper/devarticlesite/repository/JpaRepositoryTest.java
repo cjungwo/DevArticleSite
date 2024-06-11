@@ -7,6 +7,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import org.visiondeveloper.devarticlesite.config.JpaConfig;
 import org.visiondeveloper.devarticlesite.domain.Article;
+import org.visiondeveloper.devarticlesite.domain.UserAccount;
 
 import java.util.List;
 
@@ -19,6 +20,8 @@ class JpaRepositoryTest {
 
     private final ArticleRepository articleRepository;
     private final ArticleCommentRepository articleCommentRepository;
+    @Autowired
+    private UserAccountRepository userAccountRepository;
 
     public JpaRepositoryTest(
             @Autowired ArticleRepository articleRepository,
@@ -49,7 +52,8 @@ class JpaRepositoryTest {
     void givenTestData_whenInserting_thenWorksFine() {
         // Given
         long previousCount = articleRepository.count();
-        Article article = Article.of("new title", "new content", "new hashtag");
+        UserAccount userAccount = userAccountRepository.save(UserAccount.of("cjungwo", "pw", null, null, null));
+        Article article = Article.of(userAccount, "new title", "new content", "#java");
 
         // When
         Article savedArticle = articleRepository.save(article);
