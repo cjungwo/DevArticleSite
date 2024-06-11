@@ -548,3 +548,6 @@ insert into article_comment (article_id, content, created_at, created_by, modifi
 insert into article_comment (article_id, content, created_at, created_by, modified_at, modified_by) values ('88', 'Suspendisse potenti. In eleifend quam a odio. In hac habitasse platea dictumst.', '2024-04-22 11:21:47', 'Barty', '2023-09-19 18:30:16', 'Chloris');
 insert into article_comment (article_id, content, created_at, created_by, modified_at, modified_by) values ('15', 'Sed sagittis. Nam congue, risus semper porta volutpat, quam pede lobortis ligula, sit amet eleifend pede libero quis orci. Nullam molestie nibh in lectus.', '2023-08-03 03:56:35', 'Bard', '2023-12-20 12:48:28', 'Kerianne');
 insert into article_comment (article_id, content, created_at, created_by, modified_at, modified_by) values ('70', 'Sed ante. Vivamus tortor. Duis mattis egestas metus.', '2024-05-05 20:36:30', 'Minnie', '2024-04-08 09:19:24', 'Cyndy');
+insert into user_account (user_id, user_password, nickname, email, memo, created_at, created_by, modified_at, modified_by) values
+    ('cjungwo', 'asdf1234', 'Choi', 'cjungwo@gmail.com', 'I am Chris.', now(), 'cjungwo', now(), 'cjungwo')
+;
