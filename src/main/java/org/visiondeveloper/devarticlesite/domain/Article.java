@@ -69,4 +69,5 @@ public class Article extends AuditingFields {
     public int hashCode() {
         return Objects.hashCode(id);
     }
+
 }

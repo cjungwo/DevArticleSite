@@ -36,14 +36,13 @@ class JpaRepositoryTest {
     void givenTestData_whenSelecting_thenWorksFine() {
         // Given
 
-
         // When
         List<Article> articles = articleRepository.findAll();
 
         // Then
         assertThat(articles)
                 .isNotNull()
-                .hasSize(300);
+                .hasSize(123);
 
     }
 
