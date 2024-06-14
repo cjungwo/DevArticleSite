@@ -76,14 +76,14 @@ class ArticleControllerTest {
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(Sort.Order.desc(sortName)));
         List<Integer> barNumbers = List.of(1, 2, 3, 4, 5);
-        given(articleService.searchArticles(eq(null), eq(null), any(Pageable.class))).willReturn(Page.empty());
-        given(paginationService.getPaginationBarNumbers(pageable.getPageNumber(), pageable.getPageSize())).willReturn(barNumbers);
+        given(articleService.searchArticles(null, null, pageable)).willReturn(Page.empty());
+        given(paginationService.getPaginationBarNumbers(pageable.getPageNumber(), Page.empty().getTotalPages())).willReturn(barNumbers);
 
         // When
         mvc.perform(get("/articles")
                         .queryParam("page", String.valueOf(pageNumber))
                         .queryParam("size", String.valueOf(pageSize))
-                        .queryParam("sort", sortName)
+                        .queryParam("sort", sortName + "," + direction)
                 )
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
@@ -92,8 +92,8 @@ class ArticleControllerTest {
                 .andExpect(model().attribute("paginationBarNumbers", barNumbers));
 
         // Then
-        then(articleService).should().searchArticles(eq(null), eq(null), any(Pageable.class));
-        then(paginationService).should().getPaginationBarNumbers(pageable.getPageNumber(), pageable.getPageSize());
+        then(articleService).should().searchArticles(null, null, pageable);
+        then(paginationService).should().getPaginationBarNumbers(pageable.getPageNumber(), Page.empty().getTotalPages());
 
     }
 

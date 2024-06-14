@@ -16,13 +16,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(MainController.class)
 class MainControllerTest {
 
-    private final MockMvc mvc;
+    @Autowired
+    private MockMvc mvc;
 
-    public MainControllerTest(@Autowired MockMvc mvc) {
-        this.mvc = mvc;
-    }
+//    public MainControllerTest(@Autowired MockMvc mvc) {
+//        this.mvc = mvc;
+//    }
 
-    @DisplayName("Redirect to /articles")
+    @DisplayName("[view][GET] Redirect to /articles")
     @Test
     void givenNothing_whenRequestingRootPage_thenRedirectsToArticlesPage() throws Exception {
         // Given

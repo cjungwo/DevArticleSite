@@ -20,11 +20,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @SpringBootTest
 public class DataRestTest {
-    private final MockMvc mvc;
 
-    public DataRestTest(@Autowired MockMvc mvc) {
-        this.mvc = mvc;
-    }
+    @Autowired
+    private MockMvc mvc;
+
+//    @Autowired
+//    public DataRestTest(MockMvc mvc) {
+//        this.mvc = mvc;
+//    }
 
     @DisplayName("[api] Inquiry Article List")
     @Test
