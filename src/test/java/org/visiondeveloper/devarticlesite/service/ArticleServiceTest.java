@@ -35,7 +35,7 @@ class ArticleServiceTest {
     @Mock
     private ArticleRepository articleRepository;
 
-    
+
     @DisplayName("Search Article")
     @Test
     void givenNoSearchParameters_whenSearchingArticles_thenReturnsArticlePage() {

@@ -15,8 +15,7 @@ import org.visiondeveloper.devarticlesite.config.SecurityConfig;
 import org.visiondeveloper.devarticlesite.feature.Feature;
 import org.visiondeveloper.devarticlesite.service.ArticleService;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -26,13 +25,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(ArticleController.class)
 class ArticleControllerTest {
 
-    private final MockMvc mvc;
+    @Autowired private MockMvc mvc;
 
     @MockBean private ArticleService articleService;
 
-    public ArticleControllerTest(@Autowired MockMvc mvc) {
-        this.mvc = mvc;
-    }
 
     @DisplayName("[view][GET] Articles page - 200")
     @Test

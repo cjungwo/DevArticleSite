@@ -6,6 +6,7 @@ logging:
     org.visiondeveloper.devarticlesite: debug
     org.springframework.web.servlet: debug
     org.hibernate.type.descriptor.sql.BasicBinder: trace
+    org.springframework.test: TRACE
 
 spring:
   datasource:
