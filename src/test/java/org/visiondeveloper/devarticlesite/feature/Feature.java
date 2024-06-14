@@ -5,13 +5,15 @@ import org.visiondeveloper.devarticlesite.domain.ArticleComment;
 import org.visiondeveloper.devarticlesite.domain.UserAccount;
 import org.visiondeveloper.devarticlesite.dto.ArticleCommentDto;
 import org.visiondeveloper.devarticlesite.dto.ArticleDto;
+import org.visiondeveloper.devarticlesite.dto.ArticleWithCommentsDto;
 import org.visiondeveloper.devarticlesite.dto.UserAccountDto;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 public class Feature {
 
-    public ArticleCommentDto createArticleCommentDto(String content) {
+    public static ArticleCommentDto createArticleCommentDto(String content) {
         return ArticleCommentDto.of(
                 1L,
                 1L,
@@ -24,7 +26,7 @@ public class Feature {
         );
     }
 
-    public UserAccountDto createUserAccountDto() {
+    public static UserAccountDto createUserAccountDto() {
         return UserAccountDto.of(
                 1L,
                 "uno",
@@ -39,7 +41,7 @@ public class Feature {
         );
     }
 
-    public ArticleComment createArticleComment(String content) {
+    public static ArticleComment createArticleComment(String content) {
         return ArticleComment.of(
                 Article.of(createUserAccount(), "title", "content", "hashtag"),
                 createUserAccount(),
@@ -47,7 +49,7 @@ public class Feature {
         );
     }
 
-    public UserAccount createUserAccount() {
+    public static UserAccount createUserAccount() {
         return UserAccount.of(
                 "uno",
                 "password",
@@ -57,7 +59,7 @@ public class Feature {
         );
     }
 
-    public Article createArticle() {
+    public static Article createArticle() {
         return Article.of(
                 createUserAccount(),
                 "title",
@@ -66,11 +68,11 @@ public class Feature {
         );
     }
 
-    public ArticleDto createArticleDto() {
+    public static ArticleDto createArticleDto() {
         return createArticleDto("title", "content", "#java");
     }
 
-    public ArticleDto createArticleDto(String title, String content, String hashtag) {
+    public static ArticleDto createArticleDto(String title, String content, String hashtag) {
         return ArticleDto.of(1L,
                 createUserAccountDto(),
                 title,
@@ -82,4 +84,18 @@ public class Feature {
                 "Uno");
     }
 
+    public static ArticleWithCommentsDto createArticleWithCommentsDto() {
+        return ArticleWithCommentsDto.of(
+                1L,
+                createUserAccountDto(),
+                Set.of(),
+                "title",
+                "content",
+                "#java",
+                LocalDateTime.now(),
+                "uno",
+                LocalDateTime.now(),
+                "uno"
+        );
+    }
 }

@@ -7,6 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.visiondeveloper.devarticlesite.domain.Article;
@@ -24,6 +25,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.*;
 
 @DisplayName("Business Logic - Article")
+@Import(Feature.class)
 @ExtendWith(MockitoExtension.class)
 class ArticleServiceTest {
 
@@ -32,9 +34,6 @@ class ArticleServiceTest {
 
     @Mock
     private ArticleRepository articleRepository;
-
-    @Mock
-    private Feature feature;
 
 
     @DisplayName("Search Article")
@@ -59,14 +58,14 @@ class ArticleServiceTest {
         SearchType searchType = SearchType.TITLE;
         String searchKeyword = "title";
         Pageable pageable = Pageable.ofSize(20);
-        given(articleRepository.findByTitle(searchKeyword, pageable)).willReturn(Page.empty());
+        given(articleRepository.findByTitleContaining(searchKeyword, pageable)).willReturn(Page.empty());
 
         // When
         Page<ArticleDto> articles = sut.searchArticles(searchType, searchKeyword, pageable);
 
         // Then
         assertThat(articles).isEmpty();
-        then(articleRepository).should().findByTitle(searchKeyword, pageable);
+        then(articleRepository).should().findByTitleContaining(searchKeyword, pageable);
     }
 
     @DisplayName("Inquiry ArticleId")
@@ -74,7 +73,7 @@ class ArticleServiceTest {
     void givenArticleId_whenSearchingArticle_thenReturnsArticle() {
         // Given
         Long articleId = 1L;
-        Article article = feature.createArticle();
+        Article article = Feature.createArticle();
         given(articleRepository.findById(articleId)).willReturn(Optional.of(article));
 
         // When
@@ -109,8 +108,8 @@ class ArticleServiceTest {
     @Test
     void givenArticleInfo_whenSavingArticle_thenSavesArticle() {
         // Given
-        ArticleDto dto = feature.createArticleDto();
-        given(articleRepository.save(any(Article.class))).willReturn(feature.createArticle());
+        ArticleDto dto = Feature.createArticleDto();
+        given(articleRepository.save(any(Article.class))).willReturn(Feature.createArticle());
 
         // When
         sut.saveArticle(dto);
@@ -124,8 +123,8 @@ class ArticleServiceTest {
     @Test
     void givenArticleIdAndModifiedInfo_whenUpdatingArticle_thenUpdatesArticle() {
         // Given
-        Article article = feature.createArticle();
-        ArticleDto dto = feature.createArticleDto("New title", "New content", "#springboot");
+        Article article = Feature.createArticle();
+        ArticleDto dto = Feature.createArticleDto("New title", "New content", "#springboot");
         given(articleRepository.getReferenceById(dto.id())).willReturn(article);
 
         // When
@@ -144,7 +143,7 @@ class ArticleServiceTest {
     @Test
     void givenNonExistentArticleInfo_whenUpdatingArticle_thenLogsWarningAndDoesNothing() {
         // Given
-        ArticleDto dto = feature.createArticleDto("New title", "New content", "#springboot");
+        ArticleDto dto = Feature.createArticleDto("New title", "New content", "#springboot");
         given(articleRepository.getReferenceById(dto.id())).willThrow(EntityNotFoundException.class);
 
         // When

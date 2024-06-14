@@ -7,6 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.annotation.Import;
 import org.visiondeveloper.devarticlesite.domain.ArticleComment;
 import org.visiondeveloper.devarticlesite.dto.ArticleCommentDto;
 import org.visiondeveloper.devarticlesite.feature.Feature;
@@ -20,6 +21,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.*;
 
 @DisplayName("Business Logic - ArticleComment")
+@Import(Feature.class)
 @ExtendWith(MockitoExtension.class)
 class ArticleCommentServiceTest {
 
@@ -32,15 +34,13 @@ class ArticleCommentServiceTest {
     @Mock
     private ArticleCommentRepository articleCommentRepository;
 
-    @Mock
-    private Feature feature;
 
     @DisplayName("Search ArticleComments")
     @Test
     void givenArticleId_whenSearchingArticleComments_thenReturnsArticleComments() {
         // Given
         Long articleId = 1L;
-        ArticleComment expected = feature.createArticleComment("content");
+        ArticleComment expected = Feature.createArticleComment("content");
         given(articleCommentRepository.findByArticle_Id(articleId)).willReturn(List.of(expected));
 
         // When
@@ -58,8 +58,8 @@ class ArticleCommentServiceTest {
     @Test
     void givenArticleCommentInfo_whenSavingArticleComment_thenSavesArticleComment() {
         // Given
-        ArticleCommentDto dto = feature.createArticleCommentDto("Comment");
-        given(articleRepository.getReferenceById(dto.articleId())).willReturn(feature.createArticle());
+        ArticleCommentDto dto = Feature.createArticleCommentDto("Comment");
+        given(articleRepository.getReferenceById(dto.articleId())).willReturn(Feature.createArticle());
         given(articleCommentRepository.save(any(ArticleComment.class))).willReturn(null);
 
         // When
@@ -74,7 +74,7 @@ class ArticleCommentServiceTest {
     @Test
     void givenArticleCommentInfo_whenSavingArticleComment_thenLogsSituationAndDoesNothing() {
         // Given
-        ArticleCommentDto dto = feature.createArticleCommentDto("Comment");
+        ArticleCommentDto dto = Feature.createArticleCommentDto("Comment");
         given(articleRepository.getReferenceById(dto.articleId())).willThrow(EntityNotFoundException.class);
 
         // When
@@ -91,8 +91,8 @@ class ArticleCommentServiceTest {
         // Given
         String oldContent = "content";
         String updatedContent = "Comment";
-        ArticleComment articleComment = feature.createArticleComment(oldContent);
-        ArticleCommentDto dto = feature.createArticleCommentDto(updatedContent);
+        ArticleComment articleComment = Feature.createArticleComment(oldContent);
+        ArticleCommentDto dto = Feature.createArticleCommentDto(updatedContent);
         given(articleCommentRepository.getReferenceById(dto.id())).willReturn(articleComment);
 
         // When
@@ -109,7 +109,7 @@ class ArticleCommentServiceTest {
     @Test
     void givenArticleCommentIdAndInfo_whenUpdatingArticleComment_thenLogsWarningAndDoesNothing() {
         // Given
-        ArticleCommentDto dto = feature.createArticleCommentDto("Comment");
+        ArticleCommentDto dto = Feature.createArticleCommentDto("Comment");
         given(articleCommentRepository.getReferenceById(dto.id())).willThrow(EntityNotFoundException.class);
 
         // When

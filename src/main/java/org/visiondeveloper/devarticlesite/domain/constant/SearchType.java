@@ -1,5 +1,5 @@
 package org.visiondeveloper.devarticlesite.domain.constant;
 
 public enum SearchType {
-    TITLE, CONTENT, ID, USER, HASHTAG
+    TITLE, CONTENT, ID, NICKNAME, HASHTAG
 }
