@@ -14,26 +14,37 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.visiondeveloper.devarticlesite.config.SecurityConfig;
+import org.visiondeveloper.devarticlesite.domain.constant.FormStatus;
 import org.visiondeveloper.devarticlesite.domain.constant.SearchType;
+import org.visiondeveloper.devarticlesite.dto.ArticleDto;
+import org.visiondeveloper.devarticlesite.dto.request.ArticleRequest;
+import org.visiondeveloper.devarticlesite.dto.response.ArticleResponse;
 import org.visiondeveloper.devarticlesite.feature.Feature;
 import org.visiondeveloper.devarticlesite.service.ArticleService;
 import org.visiondeveloper.devarticlesite.service.PaginationService;
+import org.visiondeveloper.devarticlesite.util.FormDataEncoder;
 
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.then;
+import static org.mockito.BDDMockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.visiondeveloper.devarticlesite.feature.Feature.createArticleDto;
+
 
 @DisplayName("View Controller - Articles")
-@Import({SecurityConfig.class, Feature.class})
+@Import({SecurityConfig.class, Feature.class, FormDataEncoder.class})
 @WebMvcTest(ArticleController.class)
 class ArticleControllerTest {
 
     @Autowired
     private MockMvc mvc;
+
+    @Autowired
+    private FormDataEncoder formDataEncoder;
 
     @MockBean
     private ArticleService articleService;
@@ -41,7 +52,7 @@ class ArticleControllerTest {
     private PaginationService paginationService;
 
 
-    @DisplayName("[view][GET] Articles page - 200")
+    @DisplayName("[view][GET] Articles view - 200")
     @Test
     void givenNothing_whenRequestingArticlesView_thenReturnsArticlesView() throws Exception {
         // Given
@@ -62,7 +73,7 @@ class ArticleControllerTest {
 
     }
 
-    @DisplayName("[view][GET] Articles page with searchKeyword")
+    @DisplayName("[view][GET] Articles view with searchKeyword")
     @Test
     void givenSearchKeyword_whenSearchingArticlesView_thenReturnsArticlesView() throws Exception {
         // Given
@@ -88,7 +99,7 @@ class ArticleControllerTest {
 
     }
 
-    @DisplayName("[view][GET] Articles page - Paging, Sorting")
+    @DisplayName("[view][GET] Articles view - Paging, Sorting")
     @Test
     void givenPagingAndSortingParams_whenRequestingArticlesView_thenReturnsArticlesView() throws Exception {
         // Given
@@ -120,12 +131,15 @@ class ArticleControllerTest {
 
     }
 
-    @DisplayName("[view][GET] Article page - 200")
+    @DisplayName("[view][GET] Article view - 200")
     @Test
     void givenNothing_whenRequestingArticleView_thenReturnsArticleView() throws Exception {
         // Given
         Long articleId = 1L;
-        given(articleService.getArticle(articleId)).willReturn(Feature.createArticleWithCommentsDto());
+        long totalCount = 1L;
+
+        given(articleService.getArticleWithComments(articleId)).willReturn(Feature.createArticleWithCommentsDto());
+        given(articleService.getArticleCount()).willReturn(totalCount);
 
         // When
         mvc.perform(get("/articles/" + articleId))
@@ -136,12 +150,13 @@ class ArticleControllerTest {
                 .andExpect(model().attributeExists("articleComments"));
 
         // Then
-        then(articleService).should().getArticle(articleId);
+        then(articleService).should().getArticleWithComments(articleId);
+        then(articleService).should().getArticleCount();
 
     }
 
     @Disabled("WIP")
-    @DisplayName("[view][GET] Article Search page - 200")
+    @DisplayName("[view][GET] Article Search view - 200")
     @Test
     void givenNothing_whenRequestingArticleSearchView_thenReturnsArticleSearchView() throws Exception {
         // Given
@@ -153,7 +168,7 @@ class ArticleControllerTest {
                 .andExpect(view().name("articles/search"));
     }
 
-    @DisplayName("[view][GET] Hashtag Search page - 200")
+    @DisplayName("[view][GET] Hashtag Search view - 200")
     @Test
     void givenNothing_whenRequestingSearchHashtagView_thenReturnsSearchHashtagView() throws Exception {
         // Given
@@ -180,7 +195,7 @@ class ArticleControllerTest {
         then(paginationService).should().getPaginationBarNumbers(anyInt(), anyInt());
     }
 
-    @DisplayName("[view][GET] Hashtag Search page with hashtag")
+    @DisplayName("[view][GET] Hashtag Search view with hashtag")
     @Test
     void givenHashtag_whenRequestingSearchHashtagView_thenReturnsSearchHashtagView() throws Exception {
         // Given
@@ -207,6 +222,105 @@ class ArticleControllerTest {
         then(articleService).should().searchArticlesViaHashtag(eq(hashtag), any(Pageable.class));
         then(articleService).should().getHashtags();
         then(paginationService).should().getPaginationBarNumbers(anyInt(), anyInt());
+    }
+
+    @DisplayName("[view][GET] Create New Article View")
+    @Test
+    void givenNothing_whenRequesting_thenReturnsNewArticleView() throws Exception {
+        // Given
+
+        // When & Then
+        mvc.perform(get("/articles/form"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
+                .andExpect(view().name("articles/form"))
+                .andExpect(model().attribute("formStatus", FormStatus.CREATE));
+    }
+
+    @DisplayName("[view][POST] Save New Article - 200")
+    @Test
+    void givenNewArticleInfo_whenRequesting_thenSavesNewArticle() throws Exception {
+        // Given
+        ArticleRequest articleRequest = ArticleRequest.of("new title", "new content", "#new");
+        willDoNothing().given(articleService).saveArticle(any(ArticleDto.class));
+
+        // When
+        mvc.perform(
+                        post("/articles/form")
+                                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                                .content(formDataEncoder.encode(articleRequest))
+                                .with(csrf())
+                )
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:/articles"))
+                .andExpect(redirectedUrl("/articles"));
+
+        // Then
+        then(articleService).should().saveArticle(any(ArticleDto.class));
+    }
+
+    @DisplayName("[view][GET] Update Article View")
+    @Test
+    void givenNothing_whenRequesting_thenReturnsUpdatedArticlePage() throws Exception {
+        // Given
+        long articleId = 1L;
+        ArticleDto dto = createArticleDto();
+        given(articleService.getArticle(articleId)).willReturn(dto);
+
+        // When
+        mvc.perform(get("/articles/" + articleId + "/form"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
+                .andExpect(view().name("articles/form"))
+                .andExpect(model().attribute("article", ArticleResponse.from(dto)))
+                .andExpect(model().attribute("formStatus", FormStatus.UPDATE));
+
+        // Then
+        then(articleService).should().getArticle(articleId);
+    }
+
+    @DisplayName("[view][POST] Update Article - 200")
+    @Test
+    void givenUpdatedArticleInfo_whenRequesting_thenUpdatesNewArticle() throws Exception {
+        // Given
+        long articleId = 1L;
+        ArticleRequest articleRequest = ArticleRequest.of("new title", "new content", "#new");
+        willDoNothing().given(articleService).updateArticle(eq(articleId), any(ArticleDto.class));
+
+        // When
+        mvc.perform(
+                        post("/articles/" + articleId + "/form")
+                                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                                .content(formDataEncoder.encode(articleRequest))
+                                .with(csrf())
+                )
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:/articles/" + articleId))
+                .andExpect(redirectedUrl("/articles/" + articleId));
+
+        // Then
+        then(articleService).should().updateArticle(eq(articleId), any(ArticleDto.class));
+    }
+
+    @DisplayName("[view][POST] Delete Article - 200")
+    @Test
+    void givenArticleIdToDelete_whenRequesting_thenDeletesArticle() throws Exception {
+        // Given
+        long articleId = 1L;
+        willDoNothing().given(articleService).deleteArticle(articleId);
+
+        // When
+        mvc.perform(
+                        post("/articles/" + articleId + "/delete")
+                                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                                .with(csrf())
+                )
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:/articles"))
+                .andExpect(redirectedUrl("/articles"));
+
+        // Then
+        then(articleService).should().deleteArticle(articleId);
     }
 
 }
