@@ -16,6 +16,7 @@ import org.visiondeveloper.devarticlesite.dto.ArticleDto;
 import org.visiondeveloper.devarticlesite.dto.ArticleWithCommentsDto;
 import org.visiondeveloper.devarticlesite.feature.Feature;
 import org.visiondeveloper.devarticlesite.repository.ArticleRepository;
+import org.visiondeveloper.devarticlesite.repository.UserAccountRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,6 +25,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.*;
+import static org.visiondeveloper.devarticlesite.feature.Feature.createArticle;
+import static org.visiondeveloper.devarticlesite.feature.Feature.createUserAccount;
 
 @DisplayName("Business Logic - Article")
 @Import(Feature.class)
@@ -35,6 +38,8 @@ class ArticleServiceTest {
 
     @Mock
     private ArticleRepository articleRepository;
+    @Mock
+    private UserAccountRepository userAccountRepository;
 
 
     @DisplayName("Search Article with no Parameters")
@@ -114,19 +119,52 @@ class ArticleServiceTest {
         then(articleRepository).should().findAllDistinctHashtags();
     }
 
+    @DisplayName("Inquiry ArticleId of Article with Comments")
+    @Test
+    void givenArticleId_whenSearchingArticleWithComments_thenReturnsArticleWithComments() {
+        // Given
+        Long articleId = 1L;
+        Article article = createArticle();
+        given(articleRepository.findById(articleId)).willReturn(Optional.of(article));
 
+        // When
+        ArticleWithCommentsDto dto = sut.getArticleWithComments(articleId);
 
+        // Then
+        assertThat(dto)
+                .hasFieldOrPropertyWithValue("title", article.getTitle())
+                .hasFieldOrPropertyWithValue("content", article.getContent())
+                .hasFieldOrPropertyWithValue("hashtag", article.getHashtag());
+        then(articleRepository).should().findById(articleId);
+    }
+
+    @DisplayName("Cannot Inquiry ArticleId of Article with Comments - No matching ArticleId")
+    @Test
+    void givenNonexistentArticleId_whenSearchingArticleWithComments_thenThrowsException() {
+        // Given
+        Long articleId = 0L;
+        given(articleRepository.findById(articleId)).willReturn(Optional.empty());
+
+        // When
+        Throwable t = catchThrowable(() -> sut.getArticleWithComments(articleId));
+
+        // Then
+        assertThat(t)
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessage("Not found - articleId: " + articleId);
+        then(articleRepository).should().findById(articleId);
+    }
 
     @DisplayName("Inquiry ArticleId")
     @Test
     void givenArticleId_whenSearchingArticle_thenReturnsArticle() {
         // Given
         Long articleId = 1L;
-        Article article = Feature.createArticle();
+        Article article = createArticle();
         given(articleRepository.findById(articleId)).willReturn(Optional.of(article));
 
         // When
-        ArticleWithCommentsDto dto = sut.getArticle(articleId);
+        ArticleDto dto = sut.getArticle(articleId);
 
         // Then
         assertThat(dto)
@@ -158,12 +196,14 @@ class ArticleServiceTest {
     void givenArticleInfo_whenSavingArticle_thenSavesArticle() {
         // Given
         ArticleDto dto = Feature.createArticleDto();
-        given(articleRepository.save(any(Article.class))).willReturn(Feature.createArticle());
+        given(userAccountRepository.getReferenceById(dto.userAccountDto().userId())).willReturn(createUserAccount());
+        given(articleRepository.save(any(Article.class))).willReturn(createArticle());
 
         // When
         sut.saveArticle(dto);
 
         // Then
+        then(userAccountRepository).should().getReferenceById(dto.userAccountDto().userId());
         then(articleRepository).should().save(any(Article.class));
     }
 
@@ -171,12 +211,12 @@ class ArticleServiceTest {
     @Test
     void givenArticleIdAndModifiedInfo_whenUpdatingArticle_thenUpdatesArticle() {
         // Given
-        Article article = Feature.createArticle();
+        Article article = createArticle();
         ArticleDto dto = Feature.createArticleDto("New title", "New content", "#springboot");
         given(articleRepository.getReferenceById(dto.id())).willReturn(article);
 
         // When
-        sut.updateArticle(dto);
+        sut.updateArticle(dto.id(), dto);
 
         // Then
         assertThat(article)
@@ -194,7 +234,7 @@ class ArticleServiceTest {
         given(articleRepository.getReferenceById(dto.id())).willThrow(EntityNotFoundException.class);
 
         // When
-        sut.updateArticle(dto);
+        sut.updateArticle(dto.id(), dto);
 
         // Then
         then(articleRepository).should().getReferenceById(dto.id());

@@ -1,5 +1,6 @@
 package org.visiondeveloper.devarticlesite.feature;
 
+import org.springframework.test.util.ReflectionTestUtils;
 import org.visiondeveloper.devarticlesite.domain.Article;
 import org.visiondeveloper.devarticlesite.domain.ArticleComment;
 import org.visiondeveloper.devarticlesite.domain.UserAccount;
@@ -28,7 +29,6 @@ public class Feature {
 
     public static UserAccountDto createUserAccountDto() {
         return UserAccountDto.of(
-                1L,
                 "uno",
                 "password",
                 "uno@mail.com",
@@ -60,12 +60,15 @@ public class Feature {
     }
 
     public static Article createArticle() {
-        return Article.of(
+        Article article = Article.of(
                 createUserAccount(),
                 "title",
                 "content",
                 "#java"
         );
+        ReflectionTestUtils.setField(article, "id", 1L);
+
+        return article;
     }
 
     public static ArticleDto createArticleDto() {
@@ -73,7 +76,8 @@ public class Feature {
     }
 
     public static ArticleDto createArticleDto(String title, String content, String hashtag) {
-        return ArticleDto.of(1L,
+        return ArticleDto.of(
+                1L,
                 createUserAccountDto(),
                 title,
                 content,

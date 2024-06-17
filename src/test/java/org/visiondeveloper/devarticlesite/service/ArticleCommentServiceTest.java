@@ -13,6 +13,7 @@ import org.visiondeveloper.devarticlesite.dto.ArticleCommentDto;
 import org.visiondeveloper.devarticlesite.feature.Feature;
 import org.visiondeveloper.devarticlesite.repository.ArticleCommentRepository;
 import org.visiondeveloper.devarticlesite.repository.ArticleRepository;
+import org.visiondeveloper.devarticlesite.repository.UserAccountRepository;
 
 import java.util.List;
 
@@ -33,6 +34,9 @@ class ArticleCommentServiceTest {
 
     @Mock
     private ArticleCommentRepository articleCommentRepository;
+
+    @Mock
+    private UserAccountRepository userAccountRepository;
 
 
     @DisplayName("Search ArticleComments")
@@ -60,13 +64,16 @@ class ArticleCommentServiceTest {
         // Given
         ArticleCommentDto dto = Feature.createArticleCommentDto("Comment");
         given(articleRepository.getReferenceById(dto.articleId())).willReturn(Feature.createArticle());
+//        given(userAccountRepository.getReferenceById(dto.userAccountDto().userId())).willReturn(Feature.createUserAccount());
         given(articleCommentRepository.save(any(ArticleComment.class))).willReturn(null);
 
         // When
         sut.saveArticleComment(dto);
 
         // Then
-        then(articleCommentRepository).should().getReferenceById(dto.articleId());
+        then(articleRepository).should().getReferenceById(dto.articleId());
+//        then(userAccountRepository).should().getReferenceById(dto.userAccountDto().userId());
+        then(articleCommentRepository).should(never()).getReferenceById(anyLong());
         then(articleCommentRepository).should().save(any(ArticleComment.class));
     }
 
