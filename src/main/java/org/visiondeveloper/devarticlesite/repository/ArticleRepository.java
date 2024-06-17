@@ -11,10 +11,12 @@ import org.springframework.data.querydsl.binding.QuerydslBindings;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.visiondeveloper.devarticlesite.domain.Article;
 import org.visiondeveloper.devarticlesite.domain.QArticle;
+import org.visiondeveloper.devarticlesite.repository.querydsl.CustomArticleRepository;
 
 @RepositoryRestResource
 public interface ArticleRepository extends
         JpaRepository<Article, Long>,
+        CustomArticleRepository,
         QuerydslPredicateExecutor<Article>,
         QuerydslBinderCustomizer<QArticle>
 {
@@ -35,6 +37,4 @@ public interface ArticleRepository extends
         bindings.bind(root.createdAt).first(DateTimeExpression::eq);
         bindings.bind(root.createdBy).first((StringExpression::containsIgnoreCase));
     }
-
-
 }
