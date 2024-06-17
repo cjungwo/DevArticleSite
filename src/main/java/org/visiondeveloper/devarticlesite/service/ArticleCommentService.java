@@ -5,10 +5,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.visiondeveloper.devarticlesite.domain.Article;
 import org.visiondeveloper.devarticlesite.domain.ArticleComment;
+import org.visiondeveloper.devarticlesite.domain.UserAccount;
 import org.visiondeveloper.devarticlesite.dto.ArticleCommentDto;
 import org.visiondeveloper.devarticlesite.repository.ArticleCommentRepository;
 import org.visiondeveloper.devarticlesite.repository.ArticleRepository;
+import org.visiondeveloper.devarticlesite.repository.UserAccountRepository;
 
 import java.util.List;
 
@@ -20,6 +23,7 @@ public class ArticleCommentService {
 
     private final ArticleRepository articleRepository;
     private final ArticleCommentRepository articleCommentRepository;
+    private final UserAccountRepository userAccountRepository;
 
     @Transactional(readOnly = true)
     public List<ArticleCommentDto> searchArticleComments(Long articleId) {
@@ -31,7 +35,10 @@ public class ArticleCommentService {
 
     public void saveArticleComment(ArticleCommentDto dto) {
         try {
-            articleCommentRepository.save(dto.toEntity(articleRepository.getReferenceById(dto.articleId())));
+            Article article = articleRepository.getReferenceById(dto.articleId());
+            UserAccount userAccount = userAccountRepository.getReferenceById(dto.userAccountDto().userId());
+
+            articleCommentRepository.save(dto.toEntity(article, userAccount));
         } catch (EntityNotFoundException e) {
             log.warn("Failed Saving Comment. Not found article - dto: {}", dto);
         }

@@ -4,32 +4,33 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
-import org.visiondeveloper.devarticlesite.config.JpaConfig;
+import org.springframework.data.domain.AuditorAware;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.visiondeveloper.devarticlesite.domain.Article;
 import org.visiondeveloper.devarticlesite.domain.UserAccount;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("JPA Connection Test")
-@Import(JpaConfig.class)
+@Import(JpaRepositoryTest.TestJpaConfig.class)
 @DataJpaTest
 class JpaRepositoryTest {
 
-    private final ArticleRepository articleRepository;
-    private final ArticleCommentRepository articleCommentRepository;
+    @Autowired
+    private ArticleRepository articleRepository;
+
+    @Autowired
+    private ArticleCommentRepository articleCommentRepository;
+
     @Autowired
     private UserAccountRepository userAccountRepository;
 
-    public JpaRepositoryTest(
-            @Autowired ArticleRepository articleRepository,
-            @Autowired ArticleCommentRepository articleCommentRepository
-    ) {
-        this.articleRepository = articleRepository;
-        this.articleCommentRepository = articleCommentRepository;
-    }
 
     @DisplayName("Select Test")
     @Test
@@ -43,7 +44,6 @@ class JpaRepositoryTest {
         assertThat(articles)
                 .isNotNull()
                 .hasSize(123);
-
     }
 
     @DisplayName("Insert Test")
@@ -55,11 +55,10 @@ class JpaRepositoryTest {
         Article article = Article.of(userAccount, "new title", "new content", "#java");
 
         // When
-        Article savedArticle = articleRepository.save(article);
+        articleRepository.save(article);
 
         // Then
         assertThat(articleRepository.count()).isEqualTo(previousCount + 1);
-
     }
 
     @DisplayName("Update Test")
@@ -75,7 +74,6 @@ class JpaRepositoryTest {
 
         // Then
         assertThat(savedArticle).hasFieldOrPropertyWithValue("title", newTitle);
-
     }
 
     @DisplayName("Delete Test")
@@ -93,7 +91,15 @@ class JpaRepositoryTest {
         // Then
         assertThat(articleRepository.count()).isEqualTo(previousCount - 1);
         assertThat(articleCommentRepository.count()).isEqualTo(previousArticleCommentCount - deletedCommentSize);
+    }
 
+    @EnableJpaAuditing
+    @TestConfiguration
+    static class TestJpaConfig {
+        @Bean
+        AuditorAware<String> auditorAware() {
+            return () -> Optional.of("uno");
+        }
     }
 
 }

@@ -6,7 +6,7 @@
 ## Tech Environment
 - Intellij IDEA Ultimate 
 - Java 21
-- Gradle 7.4.1 
+- Gradle 8.8.0 
 - Spring Boot 3.3.0
 
 ## Tech Requirement (Tech Stack)

@@ -6,6 +6,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 import java.math.BigDecimal;
@@ -14,15 +16,15 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.*;
 
 @DisplayName("Test tool - Form Data Encoder")
-@Import({FormDataEncoder.class, ObjectMapper.class})
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE, classes = Void.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 class FormDataEncoderTest {
 
-    private final FormDataEncoder formDataEncoder;
+    @Autowired
+    private FormDataEncoder formDataEncoder;
 
-    public FormDataEncoderTest(@Autowired FormDataEncoder formDataEncoder) {
-        this.formDataEncoder = formDataEncoder;
-    }
+    @Autowired
+    private ObjectMapper objectMapper;
+    
 
     @DisplayName("Encoded Form Data")
     @Test
@@ -71,6 +73,19 @@ class FormDataEncoderTest {
 
     enum TestEnum {
         ONE, TWO, THREE
+    }
+
+    @Configuration
+    static class TestConfig {
+        @Bean
+        public FormDataEncoder formDataEncoder(ObjectMapper objectMapper) {
+            return new FormDataEncoder(objectMapper);
+        }
+
+        @Bean
+        public ObjectMapper objectMapper() {
+            return new ObjectMapper();
+        }
     }
 
 }

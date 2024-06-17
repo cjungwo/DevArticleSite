@@ -9,7 +9,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.visiondeveloper.devarticlesite.config.SecurityConfig;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @DisplayName("View Controller - Main")
 @Import(SecurityConfig.class)
@@ -19,9 +19,6 @@ class MainControllerTest {
     @Autowired
     private MockMvc mvc;
 
-//    public MainControllerTest(@Autowired MockMvc mvc) {
-//        this.mvc = mvc;
-//    }
 
     @DisplayName("[view][GET] Redirect to /articles")
     @Test
@@ -30,7 +27,8 @@ class MainControllerTest {
 
         // When & Then
         mvc.perform(get("/"))
-                .andExpect(status().is3xxRedirection());
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:/articles"));
     }
 
 }
