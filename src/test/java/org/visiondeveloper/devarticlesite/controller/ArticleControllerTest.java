@@ -14,6 +14,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.visiondeveloper.devarticlesite.config.SecurityConfig;
+import org.visiondeveloper.devarticlesite.domain.constant.SearchType;
 import org.visiondeveloper.devarticlesite.feature.Feature;
 import org.visiondeveloper.devarticlesite.service.ArticleService;
 import org.visiondeveloper.devarticlesite.service.PaginationService;
@@ -39,10 +40,6 @@ class ArticleControllerTest {
     @MockBean
     private PaginationService paginationService;
 
-//    @Autowired
-//    public ArticleControllerTest(MockMvc mvc) {
-//        this.mvc = mvc;
-//    }
 
     @DisplayName("[view][GET] Articles page - 200")
     @Test
@@ -61,6 +58,32 @@ class ArticleControllerTest {
 
         // Then
         then(articleService).should().searchArticles(eq(null), eq(null), any(Pageable.class));
+        then(paginationService).should().getPaginationBarNumbers(anyInt(), anyInt());
+
+    }
+
+    @DisplayName("[view][GET] Articles page with searchKeyword")
+    @Test
+    void givenSearchKeyword_whenSearchingArticlesView_thenReturnsArticlesView() throws Exception {
+        // Given
+        SearchType searchType = SearchType.TITLE;
+        String searchValue = "title";
+        given(articleService.searchArticles(eq(searchType), eq(searchValue), any(Pageable.class))).willReturn(Page.empty());
+        given(paginationService.getPaginationBarNumbers(anyInt(), anyInt())).willReturn(List.of(0, 1, 2, 3, 4));
+
+        // When
+        mvc.perform(get("/articles")
+                        .queryParam("searchType", searchType.name())
+                        .queryParam("searchValue", searchValue)
+                )
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
+                .andExpect(view().name("articles/index"))
+                .andExpect(model().attributeExists("articles"))
+                .andExpect(model().attributeExists("searchTypes"));
+
+        // Then
+        then(articleService).should().searchArticles(eq(searchType), eq(searchValue), any(Pageable.class));
         then(paginationService).should().getPaginationBarNumbers(anyInt(), anyInt());
 
     }
