@@ -17,6 +17,7 @@ import org.visiondeveloper.devarticlesite.dto.ArticleWithCommentsDto;
 import org.visiondeveloper.devarticlesite.feature.Feature;
 import org.visiondeveloper.devarticlesite.repository.ArticleRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,7 +37,7 @@ class ArticleServiceTest {
     private ArticleRepository articleRepository;
 
 
-    @DisplayName("Search Article")
+    @DisplayName("Search Article with no Parameters")
     @Test
     void givenNoSearchParameters_whenSearchingArticles_thenReturnsArticlePage() {
         // Given
@@ -67,6 +68,54 @@ class ArticleServiceTest {
         assertThat(articles).isEmpty();
         then(articleRepository).should().findByTitleContaining(searchKeyword, pageable);
     }
+
+    @DisplayName("Search Hashtag with no Parameters")
+    @Test
+    void givenNoSearchParameters_whenSearchingArticlesViaHashtag_thenReturnsEmptyPage() {
+        // Given
+        Pageable pageable = Pageable.ofSize(20);
+
+        // When
+        Page<ArticleDto> articles = sut.searchArticlesViaHashtag(null, pageable);
+
+        // Then
+        assertThat(articles).isEqualTo(Page.empty(pageable));
+        then(articleRepository).shouldHaveNoInteractions();
+    }
+
+    @DisplayName("Search Hashtag with Parameters")
+    @Test
+    void givenHashtag_whenSearchingArticlesViaHashtag_thenReturnsArticlesPage() {
+        // Given
+        String hashtag = "#java";
+        Pageable pageable = Pageable.ofSize(20);
+        given(articleRepository.findByHashtag(hashtag, pageable)).willReturn(Page.empty(pageable));
+
+        // When
+        Page<ArticleDto> articles = sut.searchArticlesViaHashtag(hashtag, pageable);
+
+        // Then
+        assertThat(articles).isEqualTo(Page.empty(pageable));
+        then(articleRepository).should().findByHashtag(hashtag, pageable);
+    }
+
+    @DisplayName("Inquiry Hashtag List")
+    @Test
+    void givenNothing_whenCall_thenReturnsHashtags() {
+        // Given
+        List<String> expectedHashtags = List.of("#java", "#spring", "#boot");
+        given(articleRepository.findAllDistinctHashtags()).willReturn(expectedHashtags);
+
+        // When
+        List<String> articles = sut.getHashtags();
+
+        // Then
+        assertThat(articles).isEqualTo(expectedHashtags);
+        then(articleRepository).should().findAllDistinctHashtags();
+    }
+
+
+
 
     @DisplayName("Inquiry ArticleId")
     @Test
@@ -116,7 +165,6 @@ class ArticleServiceTest {
 
         // Then
         then(articleRepository).should().save(any(Article.class));
-
     }
 
     @DisplayName("Update Article")
@@ -136,7 +184,6 @@ class ArticleServiceTest {
                 .hasFieldOrPropertyWithValue("content", dto.content())
                 .hasFieldOrPropertyWithValue("hashtag", dto.hashtag());
         then(articleRepository).should().getReferenceById(dto.id());
-
     }
 
     @DisplayName("Cannot Update Article - No matching ArticleId")
@@ -151,7 +198,6 @@ class ArticleServiceTest {
 
         // Then
         then(articleRepository).should().getReferenceById(dto.id());
-
     }
 
     @DisplayName("Delete Article")
@@ -166,7 +212,6 @@ class ArticleServiceTest {
 
         // Then
         then(articleRepository).should().deleteById(articleId);
-
     }
 
 }
